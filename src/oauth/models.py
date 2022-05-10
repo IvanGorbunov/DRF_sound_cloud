@@ -49,7 +49,7 @@ class SocialLink(models.Model):
     Модель ссылок на соц. сути пользователя
     """
     user = models.ForeignKey(AuthUser, on_delete=models.CASCADE, related_name='social_links')
-    kink = models.URLField(max_length=100)
+    link = models.URLField(max_length=100)
 
     def __str__(self):
         return f'{self.user}'
