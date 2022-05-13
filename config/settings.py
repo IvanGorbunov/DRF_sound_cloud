@@ -100,6 +100,30 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# region REST
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.AllowAny',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'src.oauth.services.auth_backend.AuthBackend',
+    ),
+}
+# endregion
+
+# region Swagger
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header',
+        },
+    },
+}
+
+# endregion
+
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
