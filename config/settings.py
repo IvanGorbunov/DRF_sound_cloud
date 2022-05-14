@@ -121,7 +121,6 @@ SWAGGER_SETTINGS = {
         },
     },
 }
-
 # endregion
 
 # Internationalization
@@ -149,6 +148,8 @@ ALGORITHM = 'HS256'
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24
 
 GOOGLE_CLIENT_ID = env.str('GOOGLE_CLIENT_ID', '')
+SPOTIFY_CLIENT_ID = env.str('SPOTIFY_CLIENT_ID', '')
+SPOTIFY_SECRET = env.str('SPOTIFY_SECRET', '')
 
 if DEBUG:
     import socket

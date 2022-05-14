@@ -6,4 +6,6 @@ urlpatterns = [
 
     path('', auth_views.google_login),
     path('google/', auth_views.google_auth),
+    path('spotify-login/', auth_views.spotify_login),
+    path('spotify-callback/', auth_views.spotify_auth),
 ]
