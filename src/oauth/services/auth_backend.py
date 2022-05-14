@@ -37,7 +37,7 @@ class AuthBackend(authentication.BaseAuthentication):
         except jwt.PyJWTError:
             raise exceptions.AuthenticationFailed('Invalid authentication. Could not decode token.')
 
-        token_exp = datetime.formatimestamp(payload['exp'])
+        token_exp = datetime.fromtimestamp(payload['exp'])
         if token_exp < datetime.utcnow():
             raise exceptions.AuthenticationFailed('Token expired.')
 
