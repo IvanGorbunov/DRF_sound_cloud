@@ -52,7 +52,7 @@ class Track(models.Model):
         upload_to=get_path_upload_track,
         validators=[FileExtensionValidator(allowed_extensions=['mp3', 'wav'])]
     )
-    create_at = models.DateTimeField(auto_created=True)
+    create_at = models.DateTimeField(auto_now=True)
     plays_count = models.PositiveIntegerField(default=0)
     download = models.PositiveIntegerField(default=0)
     likes_count = models.PositiveIntegerField(default=0)
@@ -78,7 +78,7 @@ class PlayList(models.Model):
     """
     user = models.ForeignKey(AuthUser, on_delete=models.CASCADE, related_name='play_lists')
     title = models.CharField(max_length=100)
-    track = models.ManyToManyField(Track, related_name='track_play_lists')
+    tracks = models.ManyToManyField(Track, related_name='track_play_lists')
     cover = models.ImageField(
         upload_to=get_path_upload_cover_playlist,
         blank=True,
