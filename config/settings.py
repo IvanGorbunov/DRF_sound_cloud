@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'drf_yasg',
     'django_filters',
+    'corsheaders',
 
     'src.oauth',
     'src.audio_library',
@@ -47,6 +48,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -80,8 +82,18 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
+SECRET_KEY = env.str('SECRET_KEY', '')
+
 DATABASES = {
-    'default': env.db()
+    # 'default': env.db()
+    'default': {
+        'ENGINE': env.str('POSTGRES_ENGINE', 'django.db.backends.sqlite3'),
+        'NAME': env.str('POSTGRES_DB', os.path.join(BASE_DIR, 'db.sqlite3')),
+        'USER': env.str('POSTGRES_USER', 'user'),
+        'PASSWORD': env.str('POSTGRES_PASSWORD', 'password'),
+        'HOST': env.str('POSTGRES_HOST', 'localhost'),
+        'PORT': env.str('POSTGRES_PORT', '5432'),
+    },
 }
 
 # Password validation
@@ -142,7 +154,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -153,8 +166,17 @@ ALGORITHM = 'HS256'
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24
 
 GOOGLE_CLIENT_ID = env.str('GOOGLE_CLIENT_ID', '')
+GOOGLE_SECRET = env.str('GOOGLE_SECRET', '')
+
 SPOTIFY_CLIENT_ID = env.str('SPOTIFY_CLIENT_ID', '')
 SPOTIFY_SECRET = env.str('SPOTIFY_SECRET', '')
+
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost',
+    'http://localhost:8000',
+    'http://127.0.0.1',
+    'http://127.0.0.1:8000',
+]
 
 if DEBUG:
     import socket
