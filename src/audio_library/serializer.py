@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from .models import Genre, License, Album, Track, PlayList
 from ..base.services import delete_old_file
+from ..oauth.serializer import AuthorSerializer
 
 
 class BaseSerializer(serializers.ModelSerializer):
@@ -45,6 +46,7 @@ class AlbumSerializer(BaseSerializer):
 class CreateAuthorTrackSerializer(BaseSerializer):
     plays_count = serializers.IntegerField(read_only=True)
     download = serializers.IntegerField(read_only=True)
+    user = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Track
@@ -59,10 +61,14 @@ class CreateAuthorTrackSerializer(BaseSerializer):
             'create_at',
             'plays_count',
             'download',
+            'private',
+            'cover',
+            'user',
         )
 
     def update(self, instance, validated_data):
         delete_old_file(instance.file.path)
+        delete_old_file(instance.cover.path)
         return super().update(instance, validated_data)
 
 
@@ -70,6 +76,7 @@ class AuthorTrackSerializer(CreateAuthorTrackSerializer):
     license = LicenseSerializer()
     genre = GenreSerializer(many=True)
     album = AlbumSerializer()
+    user = AuthorSerializer()
 
 
 class CreatePlayListSerializer(BaseSerializer):
