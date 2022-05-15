@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Genre, License, Album, Track, PlayList
+from .models import Genre, License, Album, Track, PlayList, Comment
 from ..base.services import delete_old_file
 from ..oauth.serializer import AuthorSerializer
 
@@ -98,6 +98,36 @@ class CreatePlayListSerializer(BaseSerializer):
 class PlayListSerializer(CreatePlayListSerializer):
     tracks = AuthorTrackSerializer(many=True, read_only=True)
 
+
+class CommentAuthorSerializer(serializers.ModelSerializer):
+    """
+    Сериализация комментариев
+    """
+
+    class Meta:
+        model = Comment
+        fields = (
+            'id',
+            'text',
+            'track',
+        )
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    """
+    Сериализация комментариев
+    """
+    user = AuthorSerializer()
+
+    class Meta:
+        model = Comment
+        fields = (
+            'id',
+            'text',
+            'user',
+            'track',
+            'create_at',
+        )
 
 
 

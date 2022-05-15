@@ -23,4 +23,10 @@ urlpatterns = [
 
     path('stream-track/<int:pk>/', views.StreamFileView.as_view()),
     path('download-track/<int:pk>/', views.DownloadTrackView.as_view()),
+
+    path('comments/', views.CommentAuthorView.as_view({'get': 'list', 'post': 'create'})),
+    path('comments/<int:pk>/', views.CommentAuthorView.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'})),
+
+    path('comments_by_track/<int:pk>/', views.CommentView.as_view({'get': 'list'})),
+
 ]
