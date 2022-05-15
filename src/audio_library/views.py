@@ -1,6 +1,6 @@
 import os.path
 
-from django.http import FileResponse
+from django.http import FileResponse, HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, viewsets, parsers, views, status
 from rest_framework.generics import get_object_or_404
@@ -144,17 +144,35 @@ class AuthorTrackListView(generics.ListAPIView):
         )
 
 
-class StreamFileView(views.APIView):
-
-    def set_play(self, track):
-        track.plays_count += 1
-        track.save()
+class StreamingFileView(views.APIView):
+    """ Воспроизведение трека
+    """
+    def set_play(self):
+        self.track.plays_count += 1
+        self.track.save()
 
     def get(self, request, pk):
-        track = get_object_or_404(Track, id=pk)
-        if os.path.exists(track.file.path):
-            self.set_play(track)
-            return FileResponse(open(track.file.path, 'rb'), filename=track.file.name)
+        self.track = get_object_or_404(Track, id=pk, private=False)
+        if os.path.exists(self.track.file.path):
+            self.set_play()
+            response = HttpResponse('', content_type='audio/mpeg', status=206)
+            response['X-Accel-Redirect'] = f'/mp3/{self.track.file.name}'
+            return response
+        else:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+class StreamingFileAuthorView(views.APIView):
+    """ Воспроизведение трека автора
+    """
+    permission_classes = [IsAuthor]
+
+    def get(self, request, pk):
+        self.track = get_object_or_404(Track, id=pk, user=request.user)
+        if os.path.exists(self.track.file.path):
+            response = HttpResponse('', content_type='audio/mpeg', status=206)
+            response['X-Accel-Redirect'] = f'/mp3/{self.track.file.name}'
+            return response
         else:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -169,10 +187,12 @@ class DownloadTrackView(views.APIView):
         self.track.save()
 
     def get(self, request, pk):
-        self.track = get_object_or_404(Track, id=pk)
+        self.track = get_object_or_404(Track, id=pk, private=False)
         if os.path.exists(self.track.file.path):
             self.set_download()
-            return FileResponse(open(self.track.file.path, 'rb'), filename=self.track.file.name, as_attachment=True)
+            response = HttpResponse('', content_type='audio/mpeg', status=206)
+            response['X-Accel-Redirect'] = f'/media/{self.track.file.name}'
+            return response
         else:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -199,4 +219,5 @@ class CommentView(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Comment.objects.filter(track_id=self.kwargs.get('pk'))
+
 
